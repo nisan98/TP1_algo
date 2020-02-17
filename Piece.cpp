@@ -12,6 +12,57 @@
 namespace TP1
 {
 
-	//Mettez l'implémentation de vos méthodes ici.
+// À compléter
+Piece::Piece() { }
+
+Piece::Piece(const std::string & p_nom) : 
+	m_nom(p_nom) { }
+
+Piece::Piece(const Piece & p_source) :
+	m_portes(p_source.getPortes()), 
+	m_parcourue(p_source.getParcourue()),
+	m_nom(p_source.getNom()), 
+	m_distanceDuDebut(p_source.getDistanceDuDebut()) { }
+
+// À compléter
+Piece::~Piece() { }
+
+std::string Piece::getNom() const
+{
+	return m_nom;
+}
+
+bool Piece::getParcourue() const
+{
+	return m_parcourue;
+}
+
+const std::list<Porte> & Piece::getPortes() const
+{
+	return m_portes;
+}
+
+int Piece::getDistanceDuDebut() const
+{
+	return m_distanceDuDebut;
+}
+
+void Piece::ajoutePorte(const Porte & p_porte)
+{
+	m_portes.push_back(p_porte);
+}
+
+void Piece::setParcourue(bool p_parcourue)
+{
+	m_parcourue = p_parcourue;
+}
+
+void Piece::setDistanceDuDebut(int p_distanceDuDebut)
+{
+	m_distanceDuDebut = p_distanceDuDebut;
+}
+
+// À compléter
+const Piece & Piece::operator=(const Piece & p_source) { return *this; }
 
 }
