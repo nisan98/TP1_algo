@@ -12,7 +12,6 @@
 namespace TP1
 {
 
-// À compléter
 Piece::Piece() { }
 
 Piece::Piece(const std::string & p_nom) : 
@@ -24,7 +23,6 @@ Piece::Piece(const Piece & p_source) :
 	m_nom(p_source.getNom()), 
 	m_distanceDuDebut(p_source.getDistanceDuDebut()) { }
 
-// À compléter
 Piece::~Piece() { }
 
 std::string Piece::getNom() const
@@ -62,7 +60,13 @@ void Piece::setDistanceDuDebut(int p_distanceDuDebut)
 	m_distanceDuDebut = p_distanceDuDebut;
 }
 
-// À compléter
-const Piece & Piece::operator=(const Piece & p_source) { return *this; }
-
+const Piece & Piece::operator=(const Piece & p_source) 
+{ 
+	m_portes = p_source.getPortes();
+	m_parcourue = p_source.getParcourue();
+	m_nom = p_source.getNom();
+	m_distanceDuDebut = p_source.getDistanceDuDebut();
+	return *this; 
 }
+
+} // fin du namespace TP1

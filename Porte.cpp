@@ -13,7 +13,6 @@
 namespace TP1
 {
 
-// À compléter
 Porte::Porte() { }
 
 Porte::Porte(Couleur p_couleur, Piece* p_destination) : 
@@ -24,7 +23,6 @@ Porte::Porte(const Porte & p_porte) :
 	m_couleur(p_porte.getCouleur()), 
 	m_destination(p_porte.getDestination()) { }
 
-// À compléter
 Porte::~Porte() { }
 
 Couleur Porte::getCouleur() const
@@ -42,7 +40,11 @@ bool Porte::operator ==(const Porte & p_source) const
 	return (m_couleur == p_source.getCouleur()) & (m_destination == p_source.getDestination());
 }
 
-// À compléter
-const Porte & Porte::operator =(const Porte & p_source) { return *this; }
-
+const Porte & Porte::operator =(const Porte & p_source) 
+{ 
+	m_destination = p_source.getDestination();
+	m_couleur = p_source.getCouleur();
+	return *this;
 }
+
+} // fin du namespace TP1

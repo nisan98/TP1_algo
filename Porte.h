@@ -67,6 +67,6 @@ private:
 
 };
 
-}
+} // fin du namespace TP1
 
 #endif /* PORTE_H_ */

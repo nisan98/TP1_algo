@@ -77,6 +77,6 @@ private:
 
 };
 
-}
+} // fin du namespace TP1
 
 #endif /* PIECE_H_ */
