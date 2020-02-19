@@ -220,14 +220,24 @@ Labyrinthe::Labyrinthe() :
 	{ }
 
 
-// Il manque l'initialisation de m_dernier
+// Il manque l'initialisation de la liste à partir de m_dernier
 Labyrinthe::Labyrinthe(const Labyrinthe & p_source) :
 	m_depart(p_source.getDepart()),
 	m_arrivee(p_source.getArrivee())
 	{ }
 
 
-Labyrinthe::~Labyrinthe() { }
+Labyrinthe::~Labyrinthe() 
+{ 
+	Labyrinthe::NoeudListePieces * noeud = m_dernier;
+	Labyrinthe::NoeudListePieces * noeud_suivant;
+
+	while (noeud) {
+		noeud_suivant = noeud->m_suivant;
+		delete noeud;
+		noeud = noeud_suivant;
+	}
+}
 
 
 // Il manque la copie de m_dernier
@@ -254,14 +264,18 @@ Couleur Labyrinthe::trouveGagnant()
 bool Labyrinthe::appartient(const Piece & p_piece) const
 {
 	bool appartient = false;
-	Labyrinthe::NoeudListePieces * noeud = m_dernier->m_suivant;
 
-	while (noeud != m_dernier && noeud->m_piece.getNom() != p_piece.getNom()) {
-		noeud = noeud->m_suivant;
-	}
+	if (m_dernier != nullptr) {
+		Labyrinthe::NoeudListePieces * noeud = m_dernier->m_suivant;
 
-	if ((noeud == m_dernier && noeud->m_piece.getNom() == p_piece.getNom()) || noeud != m_dernier) {
-		appartient = true;
+		while (noeud != m_dernier && noeud->m_piece.getNom() != p_piece.getNom()) {
+			noeud = noeud->m_suivant;
+		}
+
+		if ((noeud == m_dernier && noeud->m_piece.getNom() == p_piece.getNom()) 
+				|| noeud != m_dernier) {
+			appartient = true;
+		}
 	}
 
 	return appartient;
@@ -270,55 +284,38 @@ bool Labyrinthe::appartient(const Piece & p_piece) const
 
 void Labyrinthe::placeDepart(const std::string & p_nom) 
 { 
-	Labyrinthe::NoeudListePieces * noeud = m_dernier->m_suivant;
-	
-	while (noeud != m_dernier && noeud->m_piece.getNom() != p_nom) {
-		noeud = noeud->m_suivant;
-	}
-
-	if ((noeud == m_dernier && noeud->m_piece.getNom() == p_nom) || noeud != m_dernier) {
-		m_depart = &noeud->m_piece;
-	}
-	else {
-		throw logic_error("Labyrinthe::placeDepart : Aucune pièce ne contient le nom spécifié.");
-	}
+	m_depart = &(trouvePiece(p_nom)->m_piece);
 }
 
 
 void Labyrinthe::placeArrivee(const std::string & p_nom)
 { 
-	Labyrinthe::NoeudListePieces * noeud = m_dernier->m_suivant;
-	
-	while (noeud != m_dernier && noeud->m_piece.getNom() != p_nom) {
-		noeud = noeud->m_suivant;
-	}
-
-	if ((noeud == m_dernier && noeud->m_piece.getNom() == p_nom) || noeud != m_dernier) {
-		m_arrivee = &noeud->m_piece;
-	}
-	else {
-		throw logic_error("Labyrinthe::placeArrivee : Aucune pièce ne contient le nom spécifié.");
-	}
+	m_arrivee = &(trouvePiece(p_nom)->m_piece);
 }
 
 
 Labyrinthe::NoeudListePieces * Labyrinthe::trouvePiece(const std::string & p_nom) const
 { 
 	if (p_nom.empty()) {
-		throw invalid_argument("Labyrinthe::trouvePiece : Le nom de la pièce est vide.");
+		throw invalid_argument("Labyrinthe::trouvePiece : Le nom de la pièce, p_nom, est vide.");
 	}
 
-	Labyrinthe::NoeudListePieces * noeud = m_dernier->m_suivant;
-	
-	while (noeud != m_dernier && noeud->m_piece.getNom() != p_nom) {
-		noeud = noeud->m_suivant;
-	}
+	if (m_dernier != nullptr) {
+		Labyrinthe::NoeudListePieces * noeud = m_dernier->m_suivant;
+		
+		while (noeud != m_dernier && noeud->m_piece.getNom() != p_nom) {
+			noeud = noeud->m_suivant;
+		}
 
-	if ((noeud == m_dernier && noeud->m_piece.getNom() == p_nom) || noeud != m_dernier) {
-		return noeud;
+		if ((noeud == m_dernier && noeud->m_piece.getNom() == p_nom) || noeud != m_dernier) {
+			return noeud;
+		}
+		else {
+			throw logic_error("Labyrinthe::trouvePiece : Pièce introuvable.");
+		}
 	}
 	else {
-		throw logic_error("Labyrinthe::trouvePiece : Pièce introuvable.");
+		throw logic_error("Labyrinthe::trouvePiece : m_dernier est un nullptr.");
 	}
 }
 
