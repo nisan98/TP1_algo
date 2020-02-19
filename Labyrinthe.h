@@ -36,13 +36,13 @@ public:
 	Labyrinthe();
 
 	//! Constructeur de copie
-	Labyrinthe(const Labyrinthe & source);
+	Labyrinthe(const Labyrinthe & p_source);
 
 	//! Destructeur
 	~Labyrinthe();
 
 	//! Surcharge de l'opérateur =
-	const Labyrinthe & operator =(const Labyrinthe & source);
+	const Labyrinthe & operator =(const Labyrinthe & p_source);
 
 	//! Méthode fournie dans le fichier Labyrinthe.cpp, elle charge
 	//! un fichier contenant un labyrinthe d'une certaine couleur
@@ -96,13 +96,13 @@ public:
 	Couleur trouveGagnant();
 
 	//! Accesseur pour le membre depart
-	Piece* getDepart() const {return depart;}
+	Piece* getDepart() const {return m_depart;}
 
 	//! Accesseur pour le membre arrivee
-	Piece*  getArrivee() const {return arrivee;}
+	Piece* getArrivee() const {return m_arrivee;}
 
 	//! Vérifie si une pièce portant le nom de la pièce fournie se trouve dans le labyrinthe
-	bool appartient(const Piece & p) const;
+	bool appartient(const Piece & p_piece) const;
 
 private:
 
@@ -126,9 +126,9 @@ private:
 	{
 		public:
 
-			Piece piece; //!< La piece contenue dans un noeud d'une liste chaînée circulaire.
+			Piece m_piece; //!< La piece contenue dans un noeud d'une liste chaînée circulaire.
 
-			NoeudListePieces *suivant = nullptr; //!< Le noeud suivant
+			NoeudListePieces *m_suivant = nullptr; //!< Le noeud suivant
 	};
 
 
@@ -136,13 +136,13 @@ private:
 	//! qui correspond à la pièce portant le nom nom, la méthode doit lancer une exception invalid_argument si le nom de
 	//! la pièce est vide. La méthode doit lancer également une exception logic_error si la pièce est introuvable.
 	//! Remarquez qu'il faut retourner l'adresse du noeud et non l'adresse de la pièce.
-	NoeudListePieces * trouvePiece(const std::string & nom) const;
+	NoeudListePieces * trouvePiece(const std::string & p_nom) const;
 
-	NoeudListePieces * dernier; /*!< Le dernier noeud de la liste chaînée circulaire.*/
+	NoeudListePieces * m_dernier; /*!< Le dernier noeud de la liste chaînée circulaire.*/
 	/*!<  Ce noeuds ne contient pas nécessairement les pièces de départ ou d'arrivée. */
 
-	Piece * depart; /*!< Adresse de la pièce de départ (et non du noeud qui la contient) */
-	Piece * arrivee; /*!< Adresse de la pièce d'arrivée (et non du noeud qui la contient) */
+	Piece * m_depart; /*!< Adresse de la pièce de départ (et non du noeud qui la contient) */
+	Piece * m_arrivee; /*!< Adresse de la pièce d'arrivée (et non du noeud qui la contient) */
 
 };
 
