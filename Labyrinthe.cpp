@@ -195,54 +195,55 @@ void Labyrinthe::ajoutePassage(Couleur couleur, int i1, int j1, int i2, int j2)
 * \param[in]	p La pièce à ajouter
 * \post	La pièce appartient au labyrinthe;
 */
-void Labyrinthe::ajoutePieceLabyrinthe(const Piece& p)
+void Labyrinthe::ajoutePieceLabyrinthe(const Piece& p_piece)
 {
  Labyrinthe::NoeudListePieces* noeud = new Labyrinthe::NoeudListePieces;
- noeud->m_piece = p;
+ noeud->m_piece = p_piece;
 
  if (m_dernier == nullptr)
  {
 	 noeud->m_suivant = noeud;
 	 m_dernier = noeud;
  }
- else if (!appartient(p)) {
+ else if (!appartient(p_piece)) {
 	 noeud->m_suivant = m_dernier->m_suivant;
 	 m_dernier->m_suivant = noeud;
  }
 }
 
 
-
 Labyrinthe::Labyrinthe() :
 	m_dernier(nullptr),
 	m_depart(nullptr),
-	m_arrivee(nullptr)
-	{ }
+	m_arrivee(nullptr) { }
 
 
-// Il manque l'initialisation de la liste à partir de m_dernier
+// À revoir, segmentation fault quand utilisé
 Labyrinthe::Labyrinthe(const Labyrinthe & p_source) :
+	m_dernier(p_source.m_dernier),
 	m_depart(p_source.getDepart()),
-	m_arrivee(p_source.getArrivee())
-	{ }
+	m_arrivee(p_source.getArrivee()) { }
 
 
 Labyrinthe::~Labyrinthe() 
 { 
-	Labyrinthe::NoeudListePieces * noeud = m_dernier;
-	Labyrinthe::NoeudListePieces * noeud_suivant;
+	Labyrinthe::NoeudListePieces * noeud = m_dernier->m_suivant;
+	Labyrinthe::NoeudListePieces * noeudSuivant;
 
-	while (noeud) {
-		noeud_suivant = noeud->m_suivant;
+	do {
+		noeudSuivant = noeud->m_suivant;
 		delete noeud;
-		noeud = noeud_suivant;
+		noeud = noeudSuivant;
 	}
+	while(noeud != m_dernier);
+
+	delete noeud;
 }
 
 
-// Il manque la copie de m_dernier
 const Labyrinthe & Labyrinthe::operator =(const Labyrinthe & p_source)
 {	
+	m_dernier = p_source.m_dernier;
 	m_depart = p_source.getDepart();
 	m_arrivee = p_source.getArrivee();
 	return *this;
@@ -266,16 +267,17 @@ bool Labyrinthe::appartient(const Piece & p_piece) const
 	bool appartient = false;
 
 	if (m_dernier != nullptr) {
-		Labyrinthe::NoeudListePieces * noeud = m_dernier->m_suivant;
+		Labyrinthe::NoeudListePieces * noeud = m_dernier;
 
-		while (noeud != m_dernier && noeud->m_piece.getNom() != p_piece.getNom()) {
-			noeud = noeud->m_suivant;
-		}
-
-		if ((noeud == m_dernier && noeud->m_piece.getNom() == p_piece.getNom()) 
-				|| noeud != m_dernier) {
-			appartient = true;
-		}
+		do {
+			if (noeud->m_piece.getNom() == p_piece.getNom()) {
+				appartient = true;
+			}
+			else {
+				noeud = noeud->m_suivant;
+			}
+		} 
+		while(noeud != m_dernier && !appartient);
 	}
 
 	return appartient;
@@ -301,22 +303,60 @@ Labyrinthe::NoeudListePieces * Labyrinthe::trouvePiece(const std::string & p_nom
 	}
 
 	if (m_dernier != nullptr) {
-		Labyrinthe::NoeudListePieces * noeud = m_dernier->m_suivant;
-		
-		while (noeud != m_dernier && noeud->m_piece.getNom() != p_nom) {
-			noeud = noeud->m_suivant;
-		}
+		Labyrinthe::NoeudListePieces * noeud = m_dernier;
 
-		if ((noeud == m_dernier && noeud->m_piece.getNom() == p_nom) || noeud != m_dernier) {
-			return noeud;
-		}
-		else {
-			throw logic_error("Labyrinthe::trouvePiece : Pièce introuvable.");
-		}
+		do {
+			if (noeud->m_piece.getNom() == p_nom) {
+				return noeud;
+			}
+			else {
+				noeud = noeud->m_suivant;
+			}
+		} 
+		while(noeud != m_dernier);
+
+		throw logic_error("Labyrinthe::trouvePiece : Pièce introuvable.");
 	}
 	else {
 		throw logic_error("Labyrinthe::trouvePiece : m_dernier est un nullptr.");
 	}
+}
+
+void Labyrinthe::afficherLabyrinthe() const
+{
+	Labyrinthe::NoeudListePieces * noeud = m_dernier;
+	unsigned int nbrNoeud = 0;
+	cout << "Pièce de départ : " << getDepart()->getNom() << endl;
+	cout << "Pièce d'arrivée : " << getArrivee()->getNom() << endl;
+	cout << "Pièce de m_dernier : " << m_dernier->m_piece.getNom() << endl;
+	cout << endl;
+
+	do {
+		cout << "Noeud " << ++nbrNoeud << endl;
+
+		cout << "Nom de la pièce : " << noeud->m_piece.getNom() << endl;
+		cout << "Distance du début : " << noeud->m_piece.getDistanceDuDebut() << endl;
+		cout << "Parcourue : " << noeud->m_piece.getParcourue() << endl;
+
+		unsigned int nbrPorte = 0;
+		for (Porte porte : noeud->m_piece.getPortes()) {
+			cout << "Porte " << ++nbrPorte << ": couleur ";
+
+			switch (porte.getCouleur()) {
+				case Couleur::Rouge : cout << "rouge, "; break;
+				case Couleur::Vert : cout << "verte, "; break;
+				case Couleur::Bleu : cout << "bleue, "; break;
+				case Couleur::Jaune : cout << "jaune, "; break;
+				default : cout << "aucune, ";
+			}
+
+			cout << "pièce de destination " << porte.getDestination()->getNom() << endl;
+		}
+
+		cout << endl;
+		noeud = noeud->m_suivant;
+	} 
+	while(noeud != m_dernier);
 }
 
 } // fin du namespace TP1

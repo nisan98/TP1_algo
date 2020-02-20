@@ -12,11 +12,16 @@
 namespace TP1
 {
 
-Piece::Piece() { }
+Piece::Piece() :
+	m_parcourue(false),
+	m_nom(std::string("")),
+	m_distanceDuDebut(0) { }
 
 
 Piece::Piece(const std::string & p_nom) : 
-	m_nom(p_nom) { }
+	m_parcourue(false),
+	m_nom(p_nom),
+	m_distanceDuDebut(0) { }
 
 
 Piece::Piece(const Piece & p_source) :

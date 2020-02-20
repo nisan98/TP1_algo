@@ -59,7 +59,7 @@ public:
 	//! Cette fonction doit ajouter la pièce p à un labyrinthe. Dans le cas où
 	//! une pièce du labyrinthe porte déjà un même nom, la méthode ne doit
 	//! rien faire (faire un simple return, sans générer d'exception).
-	void ajoutePieceLabyrinthe(const Piece & p);
+	void ajoutePieceLabyrinthe(const Piece & p_piece);
 
 	//! Cette méthode doit solutionner un labyrinthe pour le joueur spécifié par joueur.
 	//! Elle doit donc trouver en combien d'étapes au minimum le joueur spécifié peut solutionner
@@ -103,6 +103,9 @@ public:
 
 	//! Vérifie si une pièce portant le nom de la pièce fournie se trouve dans le labyrinthe
 	bool appartient(const Piece & p_piece) const;
+
+	//! Affiche l'ensemble des pièces contenues dans la liste chaînée circulaire, ainsi que les attributs de classe.
+	void afficherLabyrinthe() const;
 
 private:
 
