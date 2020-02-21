@@ -214,7 +214,7 @@ void Labyrinthe::ajoutePieceLabyrinthe(const Piece& p)
 
 
 /**
-* \fn Labyrinthe::nouvelleListe(Labyrinthe::NoeudListePieces * p_dernier)
+* \fn Labyrinthe::nouvelleListe(Labyrinthe::NoeudListePieces * p_dernier) const
 * \brief Fonction qui retourne l'adresse d'un noeud d'une nouvelle liste chaînée circulaire, copiée d'un autre 
 * 		 labyrinthe à partir de son membre m_dernier. Ce noeud est assigné à m_dernier du nouveau labyrinthe par 
 * 		 le constructeur copie et la fonction de surcharge de l'opérateur =.
@@ -412,7 +412,7 @@ Couleur Labyrinthe::trouveGagnant()
 
 
 /**
-* \fn Labyrinthe::appartient()
+* \fn Labyrinthe::appartient() const
 * \brief Détermine si la pièce p_piece est contenue dans la liste chaînée circulaire du Labyrinthe.
 * \param[in] 	Piece p_piece La pièce pour laquelle on cherche à savoir si elle est dans le labyrinthe.
 */
@@ -463,7 +463,7 @@ void Labyrinthe::placeArrivee(const string & p_nom)
 
 
 /**
-* \fn Labyrinthe::trouvePiece(const string & p_nom)
+* \fn Labyrinthe::trouvePiece(const string & p_nom) const
 * \brief Détermine le noeud de la liste chaînée circulaire contenant la pièce de nom p_nom. Lance une erreur
 * 		 invalid_argument si p_nom est vide, et une erreur logic_error si la pièce est introuvable ou si le membre
 * 		 m_dernier est un nullptr.
@@ -497,7 +497,7 @@ Labyrinthe::NoeudListePieces * Labyrinthe::trouvePiece(const string & p_nom) con
 
 
 /**
-* \fn Labyrinthe::afficherLabyrinthe()
+* \fn Labyrinthe::afficherLabyrinthe() const
 * \brief Affiche l'ensemble des pièces contenues dans la liste chaînée circulaire, ainsi que les attributs de classe.
 */
 void Labyrinthe::afficherLabyrinthe() const

@@ -41,6 +41,7 @@ Piece::Piece(const std::string & p_nom) :
 /**
 * \fn Piece::Piece(const Piece & p_source)
 * \brief Constructeur copie.
+* \param[in]	Piece p_source La pièce à copier.
 */
 Piece::Piece(const Piece & p_source) :
 	m_portes(p_source.getPortes()), 
@@ -57,7 +58,7 @@ Piece::~Piece() { }
 
 
 /**
-* \fn Piece::getNom()
+* \fn Piece::getNom() const
 * \brief Permet d'obtenir la valeur de l'attribut de classe m_nom, le nom de la pièce.
 */
 std::string Piece::getNom() const
@@ -67,7 +68,7 @@ std::string Piece::getNom() const
 
 
 /**
-* \fn Piece::getParcourue()
+* \fn Piece::getParcourue() const
 * \brief Permet d'obtenir la valeur de l'attribut de classe m_parcourue, qui indique si la pièce a été parcourue
 * 		 par la méthode Labyrinthe::solutionner.
 */
@@ -78,7 +79,7 @@ bool Piece::getParcourue() const
 
 
 /**
-* \fn Piece::getPortes()
+* \fn Piece::getPortes() const
 * \brief Permet d'obtenir la valeur de l'attribut de classe m_portes, la liste des portes de la pièce.
 */
 const std::list<Porte> & Piece::getPortes() const
@@ -88,7 +89,7 @@ const std::list<Porte> & Piece::getPortes() const
 
 
 /**
-* \fn Piece::getDistanceDuDebut()
+* \fn Piece::getDistanceDuDebut() const
 * \brief Permet d'obtenir la valeur de l'attribut de classe m_distanceDuDebut, la distance de la pièce par rapport
 *  		 à la case départ.
 */
@@ -147,7 +148,7 @@ const Piece & Piece::operator =(const Piece & p_source)
 
 
 /**
-* \fn Piece::afficherPiece()
+* \fn Piece::afficherPiece() const
 * \brief Affiche la valeur des attributs de classe, notamment toutes les portes de la liste de portes, m_portes.
 */
 void Piece::afficherPiece() const

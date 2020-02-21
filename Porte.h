@@ -59,6 +59,7 @@ public:
 	//! Accesseur de la piece de destination
 	Piece* getDestination() const;
 
+	//! Affiche la valeur des attributs de classe.
 	void afficherPorte() const;
 
 private:
