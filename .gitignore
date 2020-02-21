@@ -2,3 +2,4 @@ build/
 data/
 CMakeLists.txt
 personal_testing/
+google_test/

@@ -6,14 +6,20 @@
  * \date janvier 2020
  *
  */
+#include <iostream>
 
 #include "Porte.h"
+#include "Piece.h"
+
+using namespace std;
 
 
 namespace TP1
 {
 
-Porte::Porte() { }
+Porte::Porte() :
+	m_destination(nullptr),
+	m_couleur(Couleur::Aucun) { }
 
 
 Porte::Porte(Couleur p_couleur, Piece* p_destination) : 
@@ -43,7 +49,7 @@ Piece* Porte::getDestination() const
 
 bool Porte::operator ==(const Porte & p_source) const
 {
-	return (m_couleur == p_source.getCouleur()) & (m_destination == p_source.getDestination());
+	return (m_couleur == p_source.getCouleur()) && (m_destination == p_source.getDestination());
 }
 
 
@@ -52,6 +58,21 @@ const Porte & Porte::operator =(const Porte & p_source)
 	m_destination = p_source.getDestination();
 	m_couleur = p_source.getCouleur();
 	return *this;
+}
+
+void Porte::afficherPorte() const
+{
+	cout << "couleur ";
+
+	switch (getCouleur()) {
+		case Couleur::Rouge : cout << "rouge, "; break;
+		case Couleur::Vert : cout << "verte, "; break;
+		case Couleur::Bleu : cout << "bleue, "; break;
+		case Couleur::Jaune : cout << "jaune, "; break;
+		default : cout << "aucune, ";
+	}
+
+	cout << "pièce de destination " << getDestination()->getNom() << endl;
 }
 
 } // fin du namespace TP1

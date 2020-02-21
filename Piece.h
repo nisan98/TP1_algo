@@ -61,6 +61,8 @@ public:
     //! Ajouter une porte à la liste des portes qui partent de la pièce
 	void ajoutePorte(const Porte & p_porte);
 
+	void afficherPiece() const;
+
 private:
 	std::list<Porte> m_portes; /*!< Les portes qui partent de la pièce. */
 	/*!< Cette liste peut ne pas contenir toutes les portes qui

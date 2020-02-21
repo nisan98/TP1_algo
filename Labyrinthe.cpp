@@ -8,6 +8,8 @@
  */
 
 //Fichiers à compléter par les autres méthodes de la classe Labyrinthes demandées
+#include <algorithm>
+#include <vector>
 
 #include "Labyrinthe.h"
 
@@ -212,53 +214,167 @@ void Labyrinthe::ajoutePieceLabyrinthe(const Piece& p_piece)
 }
 
 
+Labyrinthe::NoeudListePieces * Labyrinthe::nouvelleListe(Labyrinthe::NoeudListePieces * p_dernier) const
+{
+	Labyrinthe::NoeudListePieces* nouveauDernier = nullptr;
+	
+	if (p_dernier != nullptr) {
+		Labyrinthe::NoeudListePieces* noeudLabyrintheCopie = p_dernier;
+		
+		do {
+			Labyrinthe::NoeudListePieces* noeud = new Labyrinthe::NoeudListePieces;
+			noeud->m_piece = noeudLabyrintheCopie->m_piece;
+
+			if (nouveauDernier == nullptr) {
+				noeud->m_suivant = noeud;
+				nouveauDernier = noeud;
+			}
+			else {
+				noeud->m_suivant = nouveauDernier->m_suivant;
+				nouveauDernier->m_suivant = noeud;
+			}
+
+			noeudLabyrintheCopie = noeudLabyrintheCopie->m_suivant;
+		}
+		while(noeudLabyrintheCopie != p_dernier);
+	}
+	
+	return nouveauDernier;
+}
+
+
 Labyrinthe::Labyrinthe() :
 	m_dernier(nullptr),
 	m_depart(nullptr),
 	m_arrivee(nullptr) { }
 
 
-// À revoir, segmentation fault quand utilisé
 Labyrinthe::Labyrinthe(const Labyrinthe & p_source) :
-	m_dernier(p_source.m_dernier),
+	m_dernier(nouvelleListe(p_source.m_dernier)),
 	m_depart(p_source.getDepart()),
 	m_arrivee(p_source.getArrivee()) { }
 
 
 Labyrinthe::~Labyrinthe() 
 { 
-	Labyrinthe::NoeudListePieces * noeud = m_dernier->m_suivant;
-	Labyrinthe::NoeudListePieces * noeudSuivant;
+	if (m_dernier != nullptr) {
+		Labyrinthe::NoeudListePieces * noeud = m_dernier->m_suivant;
+		Labyrinthe::NoeudListePieces * noeudSuivant;
 
-	do {
-		noeudSuivant = noeud->m_suivant;
+		do {
+			noeudSuivant = noeud->m_suivant;
+			delete noeud;
+			noeud = noeudSuivant;
+		}
+		while(noeud != m_dernier);
+
 		delete noeud;
-		noeud = noeudSuivant;
 	}
-	while(noeud != m_dernier);
-
-	delete noeud;
 }
 
 
 const Labyrinthe & Labyrinthe::operator =(const Labyrinthe & p_source)
 {	
-	m_dernier = p_source.m_dernier;
+	m_dernier = nouvelleListe(p_source.m_dernier);
 	m_depart = p_source.getDepart();
 	m_arrivee = p_source.getArrivee();
 	return *this;
 }
 
 
-int Labyrinthe::solutionner(Couleur joueur)
+int Labyrinthe::solutionner(Couleur p_joueur)
 {
-	return -2;
+	queue<Piece*> filePieces;
+	filePieces.push(&(m_dernier->m_piece));
+	Piece* pieceDefilee, * pieceDestination;
+	int distanceDebutArrivee = -1;
+	Labyrinthe::NoeudListePieces * noeud;
+
+	while (!filePieces.empty() && distanceDebutArrivee == -1) {
+		pieceDefilee = filePieces.front();
+
+		// pieceDefilee->afficherPiece();
+		// cout << endl;
+
+		for (Porte porte : pieceDefilee->getPortes()) {
+			pieceDestination = porte.getDestination();
+			
+			if (!pieceDestination->getParcourue() && porte.getCouleur() == p_joueur) {
+				if (pieceDestination->getNom() == getArrivee()->getNom()) {
+					distanceDebutArrivee = pieceDefilee->getDistanceDuDebut() + 1;
+				}
+				else {
+					pieceDestination->setParcourue(true);
+					pieceDestination->setDistanceDuDebut(pieceDefilee->getDistanceDuDebut() + 1);
+					filePieces.push(pieceDestination);
+				}
+			}
+		}
+
+		if (pieceDefilee->getNom() == "0,0") {
+			pieceDefilee->setParcourue(true);
+		}
+
+		noeud = m_dernier;
+		do {
+			pieceDestination = &(noeud->m_piece);
+			
+			for (Porte porte : pieceDestination->getPortes()) {
+				if (porte.getDestination()->getNom() == pieceDefilee->getNom() 
+						&& !pieceDestination->getParcourue() 
+						&& porte.getCouleur() == p_joueur) {
+					pieceDestination->setParcourue(true);
+					pieceDestination->setDistanceDuDebut(pieceDefilee->getDistanceDuDebut() + 1);
+					filePieces.push(pieceDestination);
+				}
+			}
+
+			noeud = noeud->m_suivant;
+		} 
+		while(noeud != m_dernier);
+
+		filePieces.pop();
+	}
+
+	if (getArrivee()->getDistanceDuDebut() != 0) {
+		distanceDebutArrivee = getArrivee()->getDistanceDuDebut();
+	}
+
+	noeud = m_dernier;
+	do {
+		noeud->m_piece.setDistanceDuDebut(0);
+		noeud->m_piece.setParcourue(false);
+	}
+	while(noeud != m_dernier);
+
+	return distanceDebutArrivee;
 }
 
 
 Couleur Labyrinthe::trouveGagnant()
 {
-	return Couleur::Jaune;
+	vector<Couleur> vecCouleur {Couleur::Rouge, Couleur::Vert, Couleur::Bleu, Couleur::Jaune};
+	int solution = -1;
+	int solutionTest;
+	Couleur gagnant = Couleur::Aucun;
+
+	for (Couleur couleur : vecCouleur) {
+		solutionTest = solutionner(couleur);
+		
+		if (solutionTest != -1) {
+			if (solution == -1 || solutionTest < solution) {
+				solution = solutionTest;
+				gagnant = couleur;
+			}
+			else if (solutionTest == solution && 
+						std::find(vecCouleur.begin(), vecCouleur.end(), couleur) 
+						< std::find(vecCouleur.begin(), vecCouleur.end(), gagnant)) {
+					gagnant = couleur;
+			}
+		}
+	}
+
+	return gagnant;
 }
 
 
@@ -284,19 +400,19 @@ bool Labyrinthe::appartient(const Piece & p_piece) const
 }
 
 
-void Labyrinthe::placeDepart(const std::string & p_nom) 
+void Labyrinthe::placeDepart(const string & p_nom) 
 { 
 	m_depart = &(trouvePiece(p_nom)->m_piece);
 }
 
 
-void Labyrinthe::placeArrivee(const std::string & p_nom)
+void Labyrinthe::placeArrivee(const string & p_nom)
 { 
 	m_arrivee = &(trouvePiece(p_nom)->m_piece);
 }
 
 
-Labyrinthe::NoeudListePieces * Labyrinthe::trouvePiece(const std::string & p_nom) const
+Labyrinthe::NoeudListePieces * Labyrinthe::trouvePiece(const string & p_nom) const
 { 
 	if (p_nom.empty()) {
 		throw invalid_argument("Labyrinthe::trouvePiece : Le nom de la pièce, p_nom, est vide.");
@@ -326,6 +442,7 @@ void Labyrinthe::afficherLabyrinthe() const
 {
 	Labyrinthe::NoeudListePieces * noeud = m_dernier;
 	unsigned int nbrNoeud = 0;
+
 	cout << "Pièce de départ : " << getDepart()->getNom() << endl;
 	cout << "Pièce d'arrivée : " << getArrivee()->getNom() << endl;
 	cout << "Pièce de m_dernier : " << m_dernier->m_piece.getNom() << endl;
@@ -334,25 +451,7 @@ void Labyrinthe::afficherLabyrinthe() const
 	do {
 		cout << "Noeud " << ++nbrNoeud << endl;
 
-		cout << "Nom de la pièce : " << noeud->m_piece.getNom() << endl;
-		cout << "Distance du début : " << noeud->m_piece.getDistanceDuDebut() << endl;
-		cout << "Parcourue : " << noeud->m_piece.getParcourue() << endl;
-
-		unsigned int nbrPorte = 0;
-		for (Porte porte : noeud->m_piece.getPortes()) {
-			cout << "Porte " << ++nbrPorte << ": couleur ";
-
-			switch (porte.getCouleur()) {
-				case Couleur::Rouge : cout << "rouge, "; break;
-				case Couleur::Vert : cout << "verte, "; break;
-				case Couleur::Bleu : cout << "bleue, "; break;
-				case Couleur::Jaune : cout << "jaune, "; break;
-				default : cout << "aucune, ";
-			}
-
-			cout << "pièce de destination " << porte.getDestination()->getNom() << endl;
-		}
-
+		noeud->m_piece.afficherPiece();
 		cout << endl;
 		noeud = noeud->m_suivant;
 	} 

@@ -85,7 +85,7 @@ public:
 	//!			mettre ce champ à false pour toutes les pièces du labyrinthe.
 	//!
 	//!	Tant qu'il reste des pièces dans la file et que la pièce d'arrivée n'a pas encore été atteinte (défilée).
-	int solutionner(Couleur joueur);
+	int solutionner(Couleur p_joueur);
 
 	//! Cette méthode devra appeler quatre fois la méthode solutionner(), une fois par couleur, pour déterminer
 	//! quel est le joueur qui peut solutionner le labyrinthe en le moins de déplacements. Si aucun joueur ne peut
@@ -128,6 +128,31 @@ private:
     class NoeudListePieces
 	{
 		public:
+			void afficherNoeud() const
+			{
+				std::cout << "Noeud" << std::endl;
+				std::cout << "Nom de la pièce : " << m_piece.getNom() << std::endl;
+				std::cout << "Distance du début : " << m_piece.getDistanceDuDebut() << std::endl;
+				std::cout << "Parcourue : " << m_piece.getParcourue() << std::endl;
+
+
+				unsigned int nbrPorte = 0;
+				for (Porte porte : m_piece.getPortes()) {
+					std::cout << "Porte " << ++nbrPorte << ": couleur ";
+
+					switch (porte.getCouleur()) {
+						case Couleur::Rouge : std::cout << "rouge, "; break;
+						case Couleur::Vert : std::cout << "verte, "; break;
+						case Couleur::Bleu : std::cout << "bleue, "; break;
+						case Couleur::Jaune : std::cout << "jaune, "; break;
+						default : std::cout << "aucune, ";
+					}
+
+					std::cout << "pièce de destination " << porte.getDestination()->getNom() << std::endl;
+				}
+
+				std::cout << std::endl;
+			}
 
 			Piece m_piece; //!< La piece contenue dans un noeud d'une liste chaînée circulaire.
 
@@ -147,6 +172,7 @@ private:
 	Piece * m_depart; /*!< Adresse de la pièce de départ (et non du noeud qui la contient) */
 	Piece * m_arrivee; /*!< Adresse de la pièce d'arrivée (et non du noeud qui la contient) */
 
+	NoeudListePieces * nouvelleListe(NoeudListePieces * p_dernier) const;
 };
 
 }

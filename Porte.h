@@ -59,6 +59,8 @@ public:
 	//! Accesseur de la piece de destination
 	Piece* getDestination() const;
 
+	void afficherPorte() const;
+
 private:
 	Piece* m_destination; /*!< Vers où la porte mène.*/
 

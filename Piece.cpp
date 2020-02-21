@@ -6,8 +6,13 @@
  * \date janvier 2020
  *
  */
+#include <iostream>
 
 #include "Piece.h"
+#include "Porte.h"
+
+using namespace std;
+
 
 namespace TP1
 {
@@ -83,6 +88,20 @@ const Piece & Piece::operator =(const Piece & p_source)
 	m_nom = p_source.getNom();
 	m_distanceDuDebut = p_source.getDistanceDuDebut();
 	return *this; 
+}
+
+
+void Piece::afficherPiece() const
+{
+	cout << "Nom de la pièce : " << getNom() << endl;
+	cout << "Distance du début : " << getDistanceDuDebut() << endl;
+	cout << "Parcourue : " << getParcourue() << endl;
+
+	unsigned int nbrPorte = 0;
+	for (Porte porte : getPortes()) {
+		cout << "Porte " << ++nbrPorte << ": ";
+		porte.afficherPorte();
+	}
 }
 
 } // fin du namespace TP1
