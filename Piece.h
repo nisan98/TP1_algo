@@ -61,6 +61,7 @@ public:
     //! Ajouter une porte à la liste des portes qui partent de la pièce
 	void ajoutePorte(const Porte & p_porte);
 
+	//! Affiche la valeur des attributs de classe.
 	void afficherPiece() const;
 
 private:
