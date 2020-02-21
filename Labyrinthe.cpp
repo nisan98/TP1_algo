@@ -29,24 +29,24 @@ namespace TP1
 */
 void Labyrinthe::chargeLabyrinthe(Couleur couleur, std::ifstream& entree)
 {
- int nbCols, nbRangs;
+	int nbCols, nbRangs;
 
- if (!entree.is_open())
+	if (!entree.is_open())
 	 throw logic_error("Labyrinthe::chargeLabyrinthe: Le fichier n'est pas ouvert !");
 
- entree >> nbCols >> nbRangs;
- entree.ignore(); // Pour consommer le \n (le caractère fin de ligne)
+	entree >> nbCols >> nbRangs;
+	entree.ignore(); // Pour consommer le \n (le caractère fin de ligne)
 
- const int MAX_LIGNE = 1000;
- char ligne[MAX_LIGNE];
+	const int MAX_LIGNE = 1000;
+	char ligne[MAX_LIGNE];
 
- entree.getline(ligne, MAX_LIGNE);
- entree.getline(ligne, MAX_LIGNE);
+	entree.getline(ligne, MAX_LIGNE);
+	entree.getline(ligne, MAX_LIGNE);
 
- std::ostringstream s; // Une chaîne pour écrire dedans, cette chaîne servira pour nommer les pièces du labyrinthe
+	std::ostringstream s; // Une chaîne pour écrire dedans, cette chaîne servira pour nommer les pièces du labyrinthe
 
- for (int i = 0; i < nbCols; i++)
- {
+	for (int i = 0; i < nbCols; i++)
+	{
 	 for (int j = 0; j < nbRangs; j++)
 	 {
 		 s << i << "," << j;
@@ -54,10 +54,10 @@ void Labyrinthe::chargeLabyrinthe(Couleur couleur, std::ifstream& entree)
 		 s.str("");
 		 ajoutePieceLabyrinthe(p);
 	 }
- }
+	}
 
- for (int i = 0; i < nbCols; i++)
- {
+	for (int i = 0; i < nbCols; i++)
+	{
 	 if (ligne[i * 4 + 1] == 'D' || ligne[i * 4 + 1] == 'd')
 	 {
 		 std::string nom;
@@ -75,10 +75,10 @@ void Labyrinthe::chargeLabyrinthe(Couleur couleur, std::ifstream& entree)
 		 s.str("");
 		 placeArrivee(nom);
 	 }
- }
+	}
 
- for (int j = 0; j < nbRangs; j++)
- {
+	for (int j = 0; j < nbRangs; j++)
+	{
 	 entree.getline(ligne, MAX_LIGNE);
 
 	 for (int i = (j == nbRangs - 1 && (j & 1)) ? 1 : 0; i < nbCols; i++)
@@ -152,7 +152,7 @@ void Labyrinthe::chargeLabyrinthe(Couleur couleur, std::ifstream& entree)
 			 }
 		 }
 	 }
- }
+	}
 }
 
 
@@ -167,27 +167,26 @@ void Labyrinthe::chargeLabyrinthe(Couleur couleur, std::ifstream& entree)
 */
 void Labyrinthe::ajoutePassage(Couleur couleur, int i1, int j1, int i2, int j2)
 {
+	NoeudListePieces* piece1, * piece2;
+	string nomPiece1, nomPiece2;
+	ostringstream s;
 
- NoeudListePieces* piece1, * piece2;
- string nomPiece1, nomPiece2;
- ostringstream s;
+	s << i1 << "," << j1;
+	nomPiece1 = s.str();
 
- s << i1 << "," << j1;
- nomPiece1 = s.str();
+	s.str("");
 
- s.str("");
+	s << i2 << "," << j2;
+	nomPiece2 = s.str();
 
- s << i2 << "," << j2;
- nomPiece2 = s.str();
+	s.str("");
 
- s.str("");
+	piece1 = trouvePiece(nomPiece1);
+	piece2 = trouvePiece(nomPiece2);
 
- piece1 = trouvePiece(nomPiece1);
- piece2 = trouvePiece(nomPiece2);
+	Porte nouvellePorte(couleur, &(piece2->m_piece));
 
- Porte nouvellePorte(couleur, &(piece2->m_piece));
-
- piece1->m_piece.ajoutePorte(nouvellePorte);
+	piece1->m_piece.ajoutePorte(nouvellePorte);
 }
 
 
@@ -197,20 +196,20 @@ void Labyrinthe::ajoutePassage(Couleur couleur, int i1, int j1, int i2, int j2)
 * \param[in]	p La pièce à ajouter
 * \post	La pièce appartient au labyrinthe;
 */
-void Labyrinthe::ajoutePieceLabyrinthe(const Piece& p_piece)
+void Labyrinthe::ajoutePieceLabyrinthe(const Piece& p)
 {
- Labyrinthe::NoeudListePieces* noeud = new Labyrinthe::NoeudListePieces;
- noeud->m_piece = p_piece;
+	Labyrinthe::NoeudListePieces* noeud = new Labyrinthe::NoeudListePieces;
+	noeud->m_piece = p;
 
- if (m_dernier == nullptr)
- {
+	if (m_dernier == nullptr)
+	{
 	 noeud->m_suivant = noeud;
 	 m_dernier = noeud;
- }
- else if (!appartient(p_piece)) {
+	}
+	else if (!appartient(p)) {
 	 noeud->m_suivant = m_dernier->m_suivant;
 	 m_dernier->m_suivant = noeud;
- }
+	}
 }
 
 
@@ -293,57 +292,56 @@ int Labyrinthe::solutionner(Couleur p_joueur)
 	while (!filePieces.empty() && distanceDebutArrivee == -1) {
 		pieceDefilee = filePieces.front();
 
-		// pieceDefilee->afficherPiece();
-		// cout << endl;
-
-		for (Porte porte : pieceDefilee->getPortes()) {
-			pieceDestination = porte.getDestination();
-			
-			if (!pieceDestination->getParcourue() && porte.getCouleur() == p_joueur) {
-				if (pieceDestination->getNom() == getArrivee()->getNom()) {
-					distanceDebutArrivee = pieceDefilee->getDistanceDuDebut() + 1;
-				}
-				else {
-					pieceDestination->setParcourue(true);
-					pieceDestination->setDistanceDuDebut(pieceDefilee->getDistanceDuDebut() + 1);
-					filePieces.push(pieceDestination);
-				}
-			}
+		if (pieceDefilee->getNom() == getArrivee()->getNom()) {
+			distanceDebutArrivee = pieceDefilee->getDistanceDuDebut();
 		}
-
-		if (pieceDefilee->getNom() == "0,0") {
-			pieceDefilee->setParcourue(true);
-		}
-
-		noeud = m_dernier;
-		do {
-			pieceDestination = &(noeud->m_piece);
-			
-			for (Porte porte : pieceDestination->getPortes()) {
-				if (porte.getDestination()->getNom() == pieceDefilee->getNom() 
-						&& !pieceDestination->getParcourue() 
-						&& porte.getCouleur() == p_joueur) {
-					pieceDestination->setParcourue(true);
-					pieceDestination->setDistanceDuDebut(pieceDefilee->getDistanceDuDebut() + 1);
-					filePieces.push(pieceDestination);
+		else {
+			for (Porte porte : pieceDefilee->getPortes()) {
+				pieceDestination = porte.getDestination();
+				
+				if (!pieceDestination->getParcourue() && porte.getCouleur() == p_joueur) {
+					if (pieceDestination->getNom() == getArrivee()->getNom()) {
+						distanceDebutArrivee = pieceDefilee->getDistanceDuDebut() + 1;
+					}
+					else {
+						pieceDestination->setParcourue(true);
+						pieceDestination->setDistanceDuDebut(pieceDefilee->getDistanceDuDebut() + 1);
+						filePieces.push(pieceDestination);
+					}
 				}
 			}
 
-			noeud = noeud->m_suivant;
-		} 
-		while(noeud != m_dernier);
+			if (pieceDefilee->getNom() == "0,0") {
+				pieceDefilee->setParcourue(true);
+			}
 
-		filePieces.pop();
-	}
+			noeud = m_dernier;
+			do {
+				pieceDestination = &(noeud->m_piece);
+				
+				for (Porte porte : pieceDestination->getPortes()) {
+					if (porte.getDestination()->getNom() == pieceDefilee->getNom() 
+							&& !pieceDestination->getParcourue() 
+							&& porte.getCouleur() == p_joueur) {
+						pieceDestination->setParcourue(true);
+						pieceDestination->setDistanceDuDebut(pieceDefilee->getDistanceDuDebut() + 1);
+						filePieces.push(pieceDestination);
+					}
+				}
 
-	if (getArrivee()->getDistanceDuDebut() != 0) {
-		distanceDebutArrivee = getArrivee()->getDistanceDuDebut();
+				noeud = noeud->m_suivant;
+			} 
+			while(noeud != m_dernier);
+
+			filePieces.pop();
+		}
 	}
 
 	noeud = m_dernier;
 	do {
 		noeud->m_piece.setDistanceDuDebut(0);
 		noeud->m_piece.setParcourue(false);
+		noeud = noeud->m_suivant;
 	}
 	while(noeud != m_dernier);
 

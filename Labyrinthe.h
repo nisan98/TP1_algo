@@ -59,7 +59,7 @@ public:
 	//! Cette fonction doit ajouter la pièce p à un labyrinthe. Dans le cas où
 	//! une pièce du labyrinthe porte déjà un même nom, la méthode ne doit
 	//! rien faire (faire un simple return, sans générer d'exception).
-	void ajoutePieceLabyrinthe(const Piece & p_piece);
+	void ajoutePieceLabyrinthe(const Piece & p);
 
 	//! Cette méthode doit solutionner un labyrinthe pour le joueur spécifié par joueur.
 	//! Elle doit donc trouver en combien d'étapes au minimum le joueur spécifié peut solutionner
@@ -172,6 +172,9 @@ private:
 	Piece * m_depart; /*!< Adresse de la pièce de départ (et non du noeud qui la contient) */
 	Piece * m_arrivee; /*!< Adresse de la pièce d'arrivée (et non du noeud qui la contient) */
 
+	//! Méthode privée. Retourne l'adresse d'un noeud d'une nouvelle liste chaînée circulaire, copiée d'un autre 
+	//! labyrinthe. Ce noeud est assigné à m_dernier par le constructeur copie et la fonction de surcharge 
+	//! de l'opérateur =.
 	NoeudListePieces * nouvelleListe(NoeudListePieces * p_dernier) const;
 };
 
